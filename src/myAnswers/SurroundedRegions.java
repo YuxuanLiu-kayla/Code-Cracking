@@ -1,69 +1,81 @@
 package myAnswers;
-import java.util.Arrays;
-import java.util.ArrayList;
 
 public class SurroundedRegions {
 	
-	public static void solver(char[][] board) {
+	public void solver(char[][] board) {
 		
-		// if the input matrix is empty
-		if (board.length == 0) {
-			System.out.println(board);
+		if (board == null || board.length == 0 || board == null || 
+				(board[0] != null && board[0].length == 0) || board[0] == null) {
+			return;
 		}
-		
-		// if the number of row/column of this matrix is less than 3, then print directly. 
-		// No need to flip.
 		else if (board.length <= 2 || board[0].length <= 2) {
-			System.out.println(board);
+			return;
 		}
 		
-		else {  // the number of row/column is larger than 3
-			
-			// loop through all the elements that are not on the border
-			for (int i = 1; i < board.length - 1; i++) {
-				for (int j = 1; j < board[0].length - 1; j++) {
-					
-					ArrayList<Character> currentSur = new ArrayList<Character>();
-					// if the current element is O, then check surroundings
-					if (board[i][j] == 'O') {
-						currentSur.add(board[i-1][j]);
-						currentSur.add(board[i][j+1]);
-						currentSur.add(board[i+1][j]);
-						currentSur.add(board[i][j-1]);
-						if (currentSur.contains('O')) {
-							
-						}
-					}
+		// find all 'O's on the border
+		
+		// top & bottom
+		for (int i = 0; i < board[0].length; i++) {
+			//top
+			if (board[0][i] == 'O') {
+				board[0][i] = '#';
+				allPossible(board, 0, i);
+			}
+			// bottom
+			if (board[board.length - 1][i] == 'O') {
+				board[board.length - 1][i] = '#';
+				allPossible(board, board.length - 1, i);
+			}
+		}
+		
+		// left & right
+		for (int i = 0; i < board.length; i++) {
+			// left
+			if (board[i][0] == 'O') {
+				board[i][0] = '#';
+				allPossible(board, i, 0);
+			}
+			// right
+			if (board[i][board[0].length - 1] == 'O') {
+				board[i][board[0].length - 1] = '#';
+				allPossible(board, i, board[0].length - 1);
+			}
+		}
+		
+		// change: '#' -> 'O'
+		// change: 'O' -> 'X'
+		for (int i = 0; i < board.length; i++) {
+			for (int j = 0; j < board[0].length; j++) {
+				if (board[i][j] == '#') {
+					board[i][j] = 'O';
+				}
+				else if (board[i][j] == 'O') {
+					board[i][j] = 'X';
 				}
 			}
 		}
+	}
+	
+	// find all surrounding 'O's (these 'O's should not be flipped)
+	public void allPossible(char[][] c, int row, int column) {
 		
-	}
-	
-	public static boolean borderChecker(char[][] board, int row, int column) {
-		if (board == null) {
-			return true;
+		if (row < 0 || column < 0 || row > c.length - 1 || column > c[0].length - 1) {
+			return;
 		}
-		else {
-			if (row == 0 || row == board.length || column == 0 || column == board[0].length) {
-				return true;
-			}
+		if (c[row][column] == 'O') {
+			c[row][column] = '#';
 		}
-		return false;
-	}
-	
-	public static void matrixPrinter(char[][] c) {
-		for (char[] row: c) {
-			System.out.println(Arrays.toString(row));
+		if (row > 0 && c[row - 1][column] == 'O') {
+			allPossible(c, row - 1, column);
+		}
+		if (column < c[0].length - 1 && c[row][column + 1] == 'O') {
+			allPossible(c, row, column + 1);
+		}
+		if (row < c.length - 1 && c[row + 1][column] == 'O') {
+			allPossible(c, row + 1, column);
+		}
+		if (column > 0 && c[row][column - 1] == 'O') {
+			allPossible(c, row, column - 1);
 		}
 	}
-
-	public static void main(String[] args) {
-		char[][] test = {{'X', 'X', 'X'}, {'X', 'O', 'X'}, {'X', 'X', 'X'}};
-		char[][] test2 = new char[3][];
-		matrixPrinter(test2);
-		System.out.println(test.length);
-
-	}
-
 }
